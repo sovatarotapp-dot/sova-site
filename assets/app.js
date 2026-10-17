@@ -200,6 +200,42 @@
     var msg = document.getElementById("msg");
     var btn = document.getElementById("submit");
     var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    var done = document.getElementById("done");
+    var doneEmail = document.getElementById("done-email");
+    var STORE = "sova_waitlist_email";
+    var sub = document.querySelector(".signup .sub");
+    var title = document.getElementById("signup-title");
+
+    function showDone(addr, focus) {
+      doneEmail.textContent = addr;
+      form.hidden = true;
+      if (sub) sub.hidden = true;
+      title.classList.add("sr-only");
+      done.hidden = false;
+      if (focus) {
+        done.focus({ preventScroll: true });
+        done.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+      }
+    }
+
+    function showForm() {
+      done.hidden = true;
+      form.hidden = false;
+      if (sub) sub.hidden = false;
+      title.classList.remove("sr-only");
+      say("");
+      email.focus();
+    }
+
+    try {
+      var savedEmail = localStorage.getItem(STORE);
+      if (savedEmail) showDone(savedEmail, false);
+    } catch (e) { /* storage unavailable */ }
+
+    document.getElementById("another").addEventListener("click", function () {
+      try { localStorage.removeItem(STORE); } catch (e) { /* ignore */ }
+      showForm();
+    });
 
     function say(text, kind) {
       msg.textContent = text;
@@ -238,8 +274,11 @@
         .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, status: r.status, d: d }; }); })
         .then(function (res) {
           if (res.ok) {
+            var addr = value.toLowerCase();
             form.reset();
-            say("Готово! Сова напишет тебе в день запуска.", "ok");
+            say("");
+            try { localStorage.setItem(STORE, addr); } catch (e) { /* ignore */ }
+            showDone(addr, true);
             track("waitlist_signup", {});
           } else if (res.status === 429) {
             say("Слишком много попыток. Попробуй через минуту.", "err");
