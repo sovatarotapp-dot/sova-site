@@ -61,6 +61,9 @@ a:hover { color: var(--gold-light); }
 .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 8px 24px; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--gold-light); }
 .wordmark { font-family: var(--font-display); font-size: 22px; letter-spacing: 0.3em; }
+.top-r { display: flex; align-items: center; gap: 10px; }
+.lang { font-size: 13px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink-muted); text-decoration: none; padding: 6px 10px; border-radius: 999px; }
+.lang:hover { color: var(--gold-light); }
 .ig { font-size: 14px; color: var(--ink-muted); text-decoration: none; border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; }
 .ig:hover { color: var(--gold-light); border-color: var(--gold); }
 
