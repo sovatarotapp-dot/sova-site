@@ -26,3 +26,13 @@
 ## Бренд
 
 Цвета, шрифты и голос — из дизайн-системы Sova. Шрифты: Forum, Cormorant Garamond, Golos Text (Google Fonts).
+
+## Цвет фона для картинок из Midjourney
+
+`tools/grade.py` приводит фон картинок к фирменному `#10131F`, золото не трогает:
+
+```
+python3 tools/grade.py карта1.png карта2.png --out graded
+```
+
+Папка `tools/` не публикуется на сайте (см. `.vercelignore`).
