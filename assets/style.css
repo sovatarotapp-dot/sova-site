@@ -151,6 +151,26 @@ h1 {
 
 .reading { margin: 26px auto 0; max-width: 40ch; text-align: center; }
 .reading[hidden] { display: none; }
+/* толкование проявляется по строкам: значение, вопрос, кнопка */
+.reading > * {
+  opacity: 0;
+  transform: translateY(12px);
+  filter: blur(6px);
+  transition: opacity 0.35s ease, transform 0.35s ease, filter 0.35s ease;
+}
+.reading.show > * {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition: opacity 0.9s ease, transform 1s cubic-bezier(.2, .8, .2, 1), filter 0.9s ease;
+}
+.reading.show > :nth-child(2) { transition-delay: 0.35s; }
+.reading.show > :nth-child(3) { transition-delay: 0.75s; }
+.hint { transition: opacity 0.35s ease; }
+.hint.fade { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .reading > *, .reading.show > * { transition: none; filter: none; transform: none; }
+}
 .r-meaning { margin: 0 0 10px; color: var(--ink); }
 .r-question { margin: 0 0 16px; font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: 22px; line-height: 1.35; color: var(--gold-light); }
 .link-btn { background: none; border: 0; padding: 4px 0; color: var(--gold); font: 500 14px var(--font-sans); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }

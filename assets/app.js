@@ -185,6 +185,26 @@
     }
   }
 
+  var readingTimer;
+
+  function setHint(text) {
+    if (reduceMotion) { hint.textContent = text; return; }
+    hint.classList.add("fade");
+    setTimeout(function () { hint.textContent = text; hint.classList.remove("fade"); }, 350);
+  }
+
+  function showReading() {
+    reading.hidden = false;
+    void reading.offsetWidth; // чтобы браузер применил начальное состояние до перехода
+    reading.classList.add("show");
+  }
+
+  function hideReading() {
+    clearTimeout(readingTimer);
+    reading.classList.remove("show");
+    readingTimer = setTimeout(function () { reading.hidden = true; }, reduceMotion ? 0 : 380);
+  }
+
   function pick(card) {
     if (cardsEl.classList.contains("done")) return;
     var c = hand[Number(card.getAttribute("data-i"))];
@@ -194,10 +214,11 @@
     var others = cardsEl.querySelectorAll(".card:not(.picked)");
     for (var i = 0; i < others.length; i++) others[i].setAttribute("tabindex", "-1");
     setTimeout(function () { sparks(card); }, reduceMotion ? 0 : 420);
-    hint.textContent = T.yourCard + c.name;
+    setHint(T.yourCard + c.name);
     rMeaning.textContent = c.m;
     rQuestion.textContent = c.q;
-    setTimeout(function () { reading.hidden = false; }, reduceMotion ? 0 : 700);
+    clearTimeout(readingTimer);
+    readingTimer = setTimeout(showReading, reduceMotion ? 0 : 750);
     track("card_pick", { card: c.name });
   }
 
@@ -257,14 +278,14 @@
 
   function reset() {
     var cards = cardsEl.querySelectorAll(".card");
-    reading.hidden = true;
+    hideReading();
     cardsEl.classList.remove("done");
     for (var i = 0; i < cards.length; i++) {
       cards[i].classList.remove("picked");
       cards[i].removeAttribute("tabindex");
       cards[i].setAttribute("aria-label", "Карта " + (i + 1));
     }
-    hint.textContent = T.hint;
+    setHint(T.hint);
     if (reduceMotion || !cardsEl.animate) { shuffleDeck(); return; }
     // ждём, пока карта перевернётся рубашкой вверх, потом тасуем
     setTimeout(function () {
