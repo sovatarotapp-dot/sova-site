@@ -201,6 +201,60 @@
     track("card_pick", { card: c.name });
   }
 
+  /* Тасовка: карты собираются в стопку, две верхние по очереди уходят
+     вбок и прячутся под низ, затем колода раздаётся обратно веером. */
+  var REST = [{ x: 0, y: 10, r: -6 }, { x: 0, y: 0, r: 0 }, { x: 0, y: 10, r: 6 }];
+  var PILE = [{ y: -4, r: -3 }, { y: -8, r: 2 }, { y: -6, r: -1 }];
+  var DURATION = 1700;
+
+  function tf(p) {
+    return "translate(" + p.x.toFixed(1) + "px," + p.y.toFixed(1) + "px) rotate(" + p.r + "deg) scale(" + (p.s || 1) + ")";
+  }
+
+  function playShuffle(done) {
+    var cards = cardsEl.querySelectorAll(".card");
+    var w = cards[0].offsetWidth;
+    var mid = cards[1].offsetLeft;
+    var easeIO = "cubic-bezier(.45,0,.25,1)";
+    var easeDeal = "cubic-bezier(.2,1.25,.35,1)";
+    cardsEl.classList.add("shuffling");
+    var left = cards.length;
+
+    for (var i = 0; i < cards.length; i++) {
+      var cx = mid - cards[i].offsetLeft;
+      var rest = { x: REST[i].x, y: REST[i].y, r: REST[i].r };
+      var pile = { x: cx, y: PILE[i].y, r: PILE[i].r };
+      var low = { x: cx, y: PILE[i].y + 4, r: PILE[i].r };
+      var gatherAt = 0.04 * i;
+      var dealAt = 0.72 + 0.05 * (2 - i);
+      var k = [
+        { offset: 0, transform: tf(rest), zIndex: [1, 3, 2][i], easing: easeIO },
+        { offset: 0.2 + gatherAt, transform: tf(pile), zIndex: [1, 3, 2][i], easing: easeIO }
+      ];
+      if (i === 1) {
+        // верхняя карта уходит вправо и прячется под стопку
+        k.push({ offset: 0.3, transform: tf({ x: cx + w * 0.72, y: -18, r: 11, s: 1.04 }), zIndex: 3, easing: easeIO });
+        k.push({ offset: 0.31, transform: tf({ x: cx + w * 0.72, y: -18, r: 11, s: 1.04 }), zIndex: 0, easing: easeIO });
+        k.push({ offset: 0.44, transform: tf(low), zIndex: 0, easing: easeIO });
+      } else if (i === 2) {
+        k.push({ offset: 0.46, transform: tf(pile), zIndex: 2, easing: easeIO });
+        // следующая верхняя уходит влево и тоже под низ
+        k.push({ offset: 0.56, transform: tf({ x: cx - w * 0.72, y: -18, r: -11, s: 1.04 }), zIndex: 2, easing: easeIO });
+        k.push({ offset: 0.57, transform: tf({ x: cx - w * 0.72, y: -18, r: -11, s: 1.04 }), zIndex: -1, easing: easeIO });
+        k.push({ offset: 0.68, transform: tf(low), zIndex: -1, easing: easeIO });
+      } else {
+        k.push({ offset: 0.44, transform: tf({ x: cx, y: PILE[i].y - 3, r: -2 }), zIndex: 1, easing: easeIO });
+        k.push({ offset: 0.68, transform: tf({ x: cx, y: PILE[i].y - 6, r: -1 }), zIndex: 1, easing: easeIO });
+      }
+      k.push({ offset: dealAt, transform: k[k.length - 1].transform, zIndex: k[k.length - 1].zIndex, easing: easeDeal });
+      k.push({ offset: 1, transform: tf(rest), zIndex: 1 });
+      var a = cards[i].animate(k, { duration: DURATION, fill: "none" });
+      a.onfinish = a.oncancel = function () {
+        if (--left === 0) { cardsEl.classList.remove("shuffling"); if (done) done(); }
+      };
+    }
+  }
+
   function reset() {
     var cards = cardsEl.querySelectorAll(".card");
     reading.hidden = true;
@@ -211,14 +265,12 @@
       cards[i].setAttribute("aria-label", "Карта " + (i + 1));
     }
     hint.textContent = T.hint;
+    if (reduceMotion || !cardsEl.animate) { shuffleDeck(); return; }
+    // ждём, пока карта перевернётся рубашкой вверх, потом тасуем
     setTimeout(function () {
       shuffleDeck();
-      if (!reduceMotion) {
-        cardsEl.classList.remove("shuffle");
-        void cardsEl.offsetWidth;
-        cardsEl.classList.add("shuffle");
-      }
-    }, reduceMotion ? 0 : 450);
+      playShuffle();
+    }, 560);
   }
 
   if (cardsEl) {
@@ -227,7 +279,6 @@
       var card = e.target.closest(".card");
       if (card) pick(card);
     });
-    cardsEl.addEventListener("animationend", function () { cardsEl.classList.remove("shuffle"); });
     again.addEventListener("click", reset);
   }
 
