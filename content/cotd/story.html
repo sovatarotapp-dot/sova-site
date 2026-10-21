@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:Forum;src:url(fonts/Forum-Regular.ttf)}
+@font-face{font-family:Cormorant;src:url("fonts/CormorantGaramond[wght].ttf");font-weight:300 700}
+@font-face{font-family:Cormorant;src:url("fonts/CormorantGaramond-Italic[wght].ttf");font-weight:300 700;font-style:italic}
+@font-face{font-family:Golos;src:url("fonts/GolosText[wght].ttf");font-weight:400 900}
+:root{--ground:#10131F;--ink:#EFE8D8;--muted:#A7ADC2;--gold:#C9A24D;--gold-l:#E6D3A3}
+html,body{margin:0;background:var(--ground)}
+.s{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--ground) url(bg.jpg) center top/1080px 1920px no-repeat;color:var(--ink)}
+.eyebrow{font-family:Golos;font-weight:500;font-size:30px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+
+/* слайд 1: тизер */
+.s1 .patch{position:absolute;left:90px;right:90px;top:800px;height:330px;background:radial-gradient(ellipse at center,rgba(16,19,31,.97) 0%,rgba(16,19,31,.9) 45%,rgba(16,19,31,0) 72%)}
+.s1 .txt{position:absolute;left:0;right:0;top:830px;text-align:center}
+.s1 h1{font-family:Forum;font-weight:400;font-size:132px;line-height:1;margin:22px 0 22px;color:var(--ink);text-shadow:0 0 40px rgba(201,162,77,.25)}
+.s1 .sub{font-family:Cormorant;font-style:italic;font-weight:500;font-size:46px;color:var(--gold-l)}
+
+/* слайд 2: карта */
+.s2::before{content:"";position:absolute;inset:0;background:rgba(16,19,31,.78)}
+.s2 .wrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;text-align:center}
+.s2 .eyebrow{margin-top:262px}
+.s2 .card{margin-top:34px;width:520px;height:780px;border-radius:22px;overflow:hidden;box-shadow:0 0 0 2px rgba(201,162,77,.55),0 0 80px rgba(201,162,77,.28),0 30px 60px rgba(0,0,0,.6)}
+.s2 .card img{width:100%;height:100%;display:block}
+.s2 h2{font-family:Forum;font-weight:400;font-size:92px;letter-spacing:.08em;margin:40px 0 0;line-height:1}
+.s2 .m{font-family:Cormorant;font-weight:500;font-size:46px;line-height:1.22;margin:22px 110px 0;color:var(--ink)}
+.s2 .q{font-family:Cormorant;font-style:italic;font-weight:500;font-size:40px;margin:26px 100px 0;line-height:1.25;color:var(--gold-l)}
+.s2 .cta{font-family:Golos;font-weight:500;font-size:30px;letter-spacing:.06em;margin-top:44px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="s s1" id="s1">
+  <div class="patch"></div>
+  <div class="txt">
+    <div class="eyebrow">{{DATE_LONG}}</div>
+    <h1>Карта дня</h1>
+    <div class="sub">Загадай вопрос и листай дальше →</div>
+  </div>
+</div>
+<div class="s s2" id="s2">
+  <div class="wrap">
+    <div class="eyebrow">Карта дня · {{DATE_SHORT}}</div>
+    <div class="card"><img src="cards/{{KEY}}.jpg" alt=""></div>
+    <h2 style="font-size:{{NAME_PX}}px">{{NAME}}</h2>
+    <div class="m">{{MSG}}</div>
+    <div class="q">Вопрос дня: {{Q}}</div>
+    <div class="cta">Задай свой вопрос сове ↓</div>
+  </div>
+</div>
+</body>
+</html>
